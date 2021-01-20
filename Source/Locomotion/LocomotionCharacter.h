@@ -27,7 +27,7 @@ private:
 
 #pragma region essential information
 public:
-	void GedtEssentialValues(const FVector& vVelocity, const FVector& vAcceleration, const FVector& vMovementInput, bool bIsMoving, bool bHasMovementInput, float fSpeed, const FRotator& rAimRotation, float fAimYawRate);
+	void GetEssentialValues(const FVector& vVelocity, const FVector& vAcceleration, const FVector& vMovementInput, bool bIsMoving, bool bHasMovementInput, float fSpeed, const FRotator& rAimRotation, float fAimYawRate);
 	
 
 #pragma endregion
