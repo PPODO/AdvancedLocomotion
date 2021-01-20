@@ -21,7 +21,6 @@ enum class EMovementDirection : uint8 {
 
 UENUM(BlueprintType)
 enum class ERotationMode : uint8 {
-	Rotation_Velocity,
 	Rotation_Looking,
 	Rotation_Aim
 };
@@ -79,6 +78,11 @@ private:
 
 #pragma region character information
 private:
+	void UpdateCharacterInfo();
+	void UpdateAimingValues();
+	void UpdateFootIK();
+
+private:
 	FVector m_vVelocity;
 	FVector m_vAcceleration;
 	FVector m_vMovementInput;
@@ -110,6 +114,7 @@ private:
 	bool m_bRotateLeft;
 	bool m_bRotateRight;
 
+	float m_fRotationRate;
 	float m_fElapsedDelayTime;
 
 #pragma region do while moving
@@ -174,6 +179,26 @@ private:
 	void DynamicTransitionCheck();
 
 #pragma endregion
+#pragma endregion
+#pragma region aiming
+private:
+	void CalculateSmoothedRotation(float fDeltaTime, float fInterpSpeed);
+	void CalculateAimingAngles();
+	void CalculateSpineRotation();
+	void CalculateYawTime();
+
+private:
+	FRotator m_rSmoothedRotation;
+	FRotator m_rSpineRotation;
+
+	FVector2D m_v2DAimingAngle;
+	FVector2D m_v2DSmoothedAimingAngle;
+
+	float m_fInputYawOffsetTime;
+	float m_fForwardYawOffsetTime;
+	float m_fLeftYawOffsetTime;
+	float m_fRightYawOffsetTime;
+
 #pragma endregion
 
 };
