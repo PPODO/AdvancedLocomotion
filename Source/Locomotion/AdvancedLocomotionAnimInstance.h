@@ -25,6 +25,14 @@ enum class ERotationMode : uint8 {
 	Rotation_Aim
 };
 
+UENUM(BlueprintType)
+enum class ETurnAngle : uint8 {
+	Left_90,
+	Right_90,
+	Left_180,
+	Right_180
+};
+
 USTRUCT(BlueprintType)
 struct FFVelocityBlend {
 	GENERATED_BODY()
@@ -57,6 +65,32 @@ public:
 	FFLeanAmount() : Lean_X(), Lean_Y() {};
 	FFLeanAmount(float x, float y) : Lean_X(x), Lean_Y(y) {};
 	
+};
+
+USTRUCT(BlueprintType)
+struct FFTurnInPlaceAsset {
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere, Category = "Turn In Place")
+		class UAnimSequence* Animation;
+	UPROPERTY(EditAnywhere, Category = "Turn In Place")
+		ETurnAngle TurnAngle;
+	UPROPERTY(EditAnywhere, Category = "Turn In Place")
+		float AnimatedAngle;
+	UPROPERTY(EditAnywhere, Category = "Turn In Place")
+		float PlayRate;
+
+public:
+	FFTurnInPlaceAsset() : Animation(), AnimatedAngle(), PlayRate() {};
+	FFTurnInPlaceAsset(class UAnimSequence* animation, ETurnAngle turnAngle, float animatedAngle, float playRate)
+		: Animation(animation), AnimatedAngle(animatedAngle), TurnAngle(turnAngle), PlayRate(playRate) {};
+	FFTurnInPlaceAsset(const FString& animationAssetPath, ETurnAngle turnAngle, float animatedAngle, float playRate)
+		: Animation(nullptr), AnimatedAngle(animatedAngle), TurnAngle(turnAngle), PlayRate(playRate) {
+		ConstructorHelpers::FObjectFinder<class UAnimSequence> animSequence(*animationAssetPath);
+		if (animSequence.Succeeded())
+			Animation = animSequence.Object;
+	};
+
 };
 
 UCLASS()
@@ -114,7 +148,8 @@ private:
 	bool m_bRotateLeft;
 	bool m_bRotateRight;
 
-	float m_fRotationRate;
+	float m_fRotateRate;
+	float m_fRotationScale;
 	float m_fElapsedDelayTime;
 
 #pragma region do while moving
@@ -175,8 +210,14 @@ private:
 #pragma region do whiile not moving
 private:
 	void RotateInPlaceCheck();
-	void TurnInPlaceCheck();
+	void TurnInPlaceCheck(float fDeltaTime);
 	void DynamicTransitionCheck();
+
+	void TurnInPlace(const FRotator & rTargetRotation, float fPlayRateScale, float fStartTime);
+
+private:
+	FFTurnInPlaceAsset m_CurrentTurnInPlaceAsset;
+	TArray<FFTurnInPlaceAsset> m_TurnInPlaceAssets;
 
 #pragma endregion
 #pragma endregion
