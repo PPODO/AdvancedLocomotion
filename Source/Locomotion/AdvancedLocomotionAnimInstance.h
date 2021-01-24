@@ -37,13 +37,13 @@ USTRUCT(BlueprintType)
 struct FFVelocityBlend {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditAnywhere, Category = "Velocity Blend")
+	UPROPERTY(BlueprintReadWrite, Category = "Velocity Blend")
 		float Velocity_F;
-	UPROPERTY(EditAnywhere, Category = "Velocity Blend")
+	UPROPERTY(BlueprintReadWrite, Category = "Velocity Blend")
 		float Velocity_B;
-	UPROPERTY(EditAnywhere, Category = "Velocity Blend")
+	UPROPERTY(BlueprintReadWrite, Category = "Velocity Blend")
 		float Velocity_L;
-	UPROPERTY(EditAnywhere, Category = "Velocity Blend")
+	UPROPERTY(BlueprintReadWrite, Category = "Velocity Blend")
 		float Velocity_R;
 
 public:
@@ -56,9 +56,9 @@ USTRUCT(BlueprintType)
 struct FFLeanAmount {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditAnywhere, Category = "Lean Amount")
+	UPROPERTY(BlueprintReadWrite, Category = "Lean Amount")
 		float Lean_X;
-	UPROPERTY(EditAnywhere, Category = "Lean Amount")
+	UPROPERTY(BlueprintReadWrite, Category = "Lean Amount")
 		float Lean_Y;
 
 public:
@@ -71,13 +71,13 @@ USTRUCT(BlueprintType)
 struct FFTurnInPlaceAsset {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditAnywhere, Category = "Turn In Place")
+	UPROPERTY(BlueprintReadWrite, Category = "Turn In Place")
 		class UAnimSequence* Animation;
-	UPROPERTY(EditAnywhere, Category = "Turn In Place")
+	UPROPERTY(BlueprintReadWrite, Category = "Turn In Place")
 		ETurnAngle TurnAngle;
-	UPROPERTY(EditAnywhere, Category = "Turn In Place")
+	UPROPERTY(BlueprintReadWrite, Category = "Turn In Place")
 		float AnimatedAngle;
-	UPROPERTY(EditAnywhere, Category = "Turn In Place")
+	UPROPERTY(BlueprintReadWrite, Category = "Turn In Place")
 		float PlayRate;
 
 public:
@@ -142,7 +142,8 @@ private:
 	bool CanDynamicTransition();
 
 private:
-	EMovementDirection m_movementDirection;
+	UPROPERTY(BlueprintReadOnly, Category = "Grounded", meta = (AllowPrivateAccess = "true"))
+		EMovementDirection m_movementDirection;
 
 	bool m_bShouldMove;
 	bool m_bRotateLeft;
@@ -160,7 +161,6 @@ private:
 private:
 	const float m_fVelocityBlendInterpSpeed = 12.f;
 	const float m_fLeanAmountInterpSpeed = 4.f;
-	float m_fDiagonalScaleAmount;
 
 #pragma region velocity blend
 private:
@@ -168,7 +168,8 @@ private:
 	FFVelocityBlend InterpVelocityBlend(const FFVelocityBlend& current, const FFVelocityBlend& target, float fInterpSpeed, float fDeltaTime);
 
 private:
-	FFVelocityBlend m_velocityBlend;
+	UPROPERTY(BlueprintReadOnly, Category = "Grounded", Meta = (AllowPrivateAccess = "true"))
+		FFVelocityBlend m_velocityBlend;
 
 #pragma endregion
 #pragma region diagonal scale amount
@@ -178,6 +179,9 @@ private:
 private:
 	UCurveFloat* m_diagonalCurveFloat;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Grounded", Meta = (AllowPrivateAccess = "true"))
+		float m_fDiagonalScaleAmount;
+
 #pragma endregion
 #pragma region acceleration/deacceleration, Lean amount
 private:
@@ -185,18 +189,28 @@ private:
 	FVector CalculateRelativeAccelerationAmount();
 
 private:
-	FVector m_vRelativeAccelerationAmount;
-	FFLeanAmount m_leanAmount;
+	UPROPERTY(BlueprintReadOnly, Category = "Grounded", Meta = (AllowPrivateAccess = "true"))
+		FVector m_vRelativeAccelerationAmount;
+	UPROPERTY(BlueprintReadOnly, Category = "Grounded", Meta = (AllowPrivateAccess = "true"))
+		FFLeanAmount m_leanAmount;
 
 #pragma endregion
 #pragma region walk/run blend, stride blend, standing rate
 private:
 	float CalculateWalkRunBlend();
 	float CalculateStrideBlend();
+	float CalculateStandingPlayRate();
 
 private:
 	UCurveFloat* m_strideWalkCurveFloat;
 	UCurveFloat* m_strideRunCurveFloat;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Grounded", Meta = (AllowPrivateAccess = "true"))
+		float m_fWalkBlend;
+	UPROPERTY(BlueprintReadOnly, Category = "Grounded", Meta = (AllowPrivateAccess = "true"))
+		float m_fStrideBlend;
+	UPROPERTY(BlueprintReadOnly, Category = "Grounded", Meta = (AllowPrivateAccess = "true"))
+		float m_fStandingPlayRate;
 
 #pragma endregion
 #pragma region set the movement direction
