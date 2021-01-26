@@ -129,7 +129,8 @@ private:
 
 	FRotator m_rAimingRotation;
 
-	ECharacterGait m_gait;
+	UPROPERTY(BlueprintReadOnly, Category = "Character Information", meta = (AllowPrivateAccess = "true"))
+		ECharacterGait m_gait;
 	ERotationMode m_rotationMode;
 
 #pragma endregion
@@ -145,12 +146,17 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = "Grounded", meta = (AllowPrivateAccess = "true"))
 		EMovementDirection m_movementDirection;
 
-	bool m_bShouldMove;
-	bool m_bRotateLeft;
-	bool m_bRotateRight;
+	UPROPERTY(BlueprintReadOnly, Category = "Grounded", meta = (AllowPrivateAccess = "true"))
+		bool m_bShouldMove;
+	UPROPERTY(BlueprintReadOnly, Category = "Grounded", meta = (AllowPrivateAccess = "true"))
+		bool m_bRotateLeft;
+	UPROPERTY(BlueprintReadOnly, Category = "Grounded", meta = (AllowPrivateAccess = "true"))
+		bool m_bRotateRight;
 
-	float m_fRotateRate;
-	float m_fRotationScale;
+	UPROPERTY(BlueprintReadOnly, Category = "Grounded", meta = (AllowPrivateAccess = "true"))
+		float m_fRotateRate;
+	UPROPERTY(BlueprintReadOnly, Category = "Grounded", meta = (AllowPrivateAccess = "true"))
+		float m_fRotationScale;
 	float m_fElapsedDelayTime;
 
 #pragma region do while moving
