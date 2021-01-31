@@ -24,9 +24,10 @@ public:
 
 public:
 	FFMovementSetting() : WalkSpeed(0.f), RunSpeed(0.f), SprintSpeed(0.f), RotationRateCurve(nullptr), MovementCurve(nullptr) {};
-	FFMovementSetting(float fWalkSpeed, float fRunSpeed, float fSprintSpeed, class UCurveFloat* rotationCurve, class UCurveVector* movementCurve) 
-		: WalkSpeed(fWalkSpeed), RunSpeed(fRunSpeed), SprintSpeed(fSprintSpeed), RotationRateCurve(rotationCurve), MovementCurve(movementCurve) {};
-	FFMovementSetting(float fWalkSpeed, float fRunSpeed, float fSprintSpeed, FString rotationCurveAssetPath, FString movementCurveAssetPath)
+	FFMovementSetting(float fWalkSpeed, float fRunSpeed, float fSprintSpeed, class UCurveFloat* rotationCurve, class UCurveVector* movementCurve)
+		: WalkSpeed(fWalkSpeed), RunSpeed(fRunSpeed), SprintSpeed(fSprintSpeed), RotationRateCurve(rotationCurve), MovementCurve(movementCurve) {
+	};
+	FFMovementSetting(float fWalkSpeed, float fRunSpeed, float fSprintSpeed, FString movementCurveAssetPath, FString rotationCurveAssetPath)
 		: WalkSpeed(fWalkSpeed), RunSpeed(fRunSpeed), SprintSpeed(fSprintSpeed) {
 		ConstructorHelpers::FObjectFinder<class UCurveFloat> rotationCurveFloat(*rotationCurveAssetPath);
 		ConstructorHelpers::FObjectFinder<class UCurveVector> movementCurveVector(*movementCurveAssetPath);
@@ -36,6 +37,21 @@ public:
 		if (movementCurveVector.Succeeded())
 			MovementCurve = movementCurveVector.Object;
 	};
+
+};
+
+USTRUCT(BlueprintType)
+struct FMovementSettingState {
+	GENERATED_BODY();
+public:
+	UPROPERTY(BlueprintReadWrite)
+		FFMovementSetting LookingDirection;
+	UPROPERTY(BlueprintReadWrite)
+		FFMovementSetting Aiming;
+
+public:
+	FMovementSettingState() {};
+	FMovementSettingState(const FFMovementSetting& lookingDirection, const FFMovementSetting& aiming) : LookingDirection(lookingDirection), Aiming(aiming) {};
 
 };
 
@@ -60,6 +76,13 @@ private:
 private:
 	void PlayerMovementInput(bool bIsForwardInput);
 
+private:
+	class UAdvancedLocomotionAnimInstance* m_pMainAnimInstance;
+
+#pragma region utility
+	float GetAnimCurveValue(const FString& curveName);
+
+#pragma endregion
 #pragma region essential information
 private:
 	void SetEssentialValues();
@@ -99,10 +122,12 @@ private:
 
 	bool CanSprint();
 
+	float GetMappedSpeed();
 	FFMovementSetting GetTargetMovementSetting();
 
 private:
 	FFMovementSetting m_currentMovementSetting;
+	FMovementSettingState m_movementData;
 
 #pragma region state values
 private:
@@ -114,6 +139,20 @@ private:
 	ECharacterGait m_gait;
 
 #pragma endregion
+#pragma endregion
+#pragma region rotation system
+private:
+	void UpdateGrounededRotation();
+
+	void SmoothCharacterRotation(const FRotator& rTarget, float fTargetInterpSpeed, float fActorInterpSpeed);
+	void LimitRotation(float fAimYawMin, float fAimYawMax, float fInterpSpeed);
+
+	bool CanUpdateMovingRotation();
+	float CalculateGrounededRotationRate();
+
+private:
+	FRotator m_rTargetRotation;
+
 #pragma endregion
 #pragma region input
 private:
